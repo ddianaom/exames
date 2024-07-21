@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        h2 {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        #products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 10px;
+        }
+        .product {
+            background-color: #fff;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            margin: 10px;
+            padding: 10px;
+            width: calc(33% - 20px);
+            box-sizing: border-box;
+        }
+        .product button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload do Exame do Paciente</h2>
+    <label for="fileUpload">Upload do Exame:</label>
+    <input type="file" id="fileUpload"><br>
+    <button onclick="uploadFile()">Upload para IPFS</button>  
+    <p id="uploadStatus"></p>
+    <label for="price">Preço do Produto (em wei):</label>
+    <input type="text" id="price"><br>
+    <button onclick="createProduct()" id="registerBtn" disabled>Registrar Produto</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const contractAddress = "0x69a1464025d4a15B9880C3c4F22076A8334a95df";
+        const contractAbi = [
+            {
+                "inputs": [
+                    { "internalType": "uint256", "name": "_price", "type": "uint256" },
+                    { "internalType": "string", "name": "_ipfsHash", "type": "string" }
+                ],
+                "name": "createProduct",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    { "indexed": false, "internalType": "uint256", "name": "id", "type": "uint256" },
+                    { "indexed": false, "internalType": "address payable", "name": "owner", "type": "address" },
+                    { "indexed": false, "internalType": "uint256", "name": "price", "type": "uint256" },
+                    { "indexed": false, "internalType": "bool", "name": "purchased", "type": "bool" },
+                    { "indexed": false, "internalType": "string", "name": "ipfsHash", "type": "string" }
+                ],
+                "name": "ProductCreated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    { "indexed": false, "internalType": "uint256", "name": "id", "type": "uint256" },
+                    { "indexed": false, "internalType": "address payable", "name": "owner", "type": "address" },
+                    { "indexed": false, "internalType": "address payable", "name": "buyer", "type": "address" },
+                    { "indexed": false, "internalType": "uint256", "name": "price", "type": "uint256" },
+                    { "indexed": false, "internalType": "bool", "name": "purchased", "type": "bool" },
+                    { "indexed": false, "internalType": "string", "name": "ipfsHash", "type": "string" }
+                ],
+                "name": "ProductPurchased",
+                "type": "event"
+            },
+            {
+                "inputs": [{ "internalType": "uint256", "name": "_id", "type": "uint256" }],
+                "name": "purchaseProduct",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "productCount",
+                "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                "name": "products",
+                "outputs": [
+                    { "internalType": "uint256", "name": "id", "type": "uint256" },
+                    { "internalType": "address payable", "name": "owner", "type": "address" },
+                    { "internalType": "uint256", "name": "price", "type": "uint256" },
+                    { "internalType": "bool", "name": "purchased", "type": "bool" },
+                    { "internalType": "string", "name": "ipfsHash", "type": "string" }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+        
+        let web3;
+        let contract;
+        let ipfsHash;
+
+        async function init() {
+            if (window.ethereum) {
+                try {
+                    web3 = new Web3(window.ethereum);
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    contract = new web3.eth.Contract(contractAbi, contractAddress);
+                } catch (error) {
+                    console.error("Usuário recusou o acesso à Ethereum wallet");
+                }
+            } else {
+                alert('Instale MetaMask!');
+            }
+        }
+
+        async function uploadFile() {
+            console.log('começando');
+            web3.eth.getBalance('0x7c2FB10AE20Abcf8b4c5a7355987f82D4ff1338d').then(console.log);
+
+            const fileUpload = document.getElementById('fileUpload');
+            const statusEl = document.getElementById('uploadStatus');
+            const file = fileUpload.files[0];
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const API_KEY = "0243807789b005c5f083";
+            const API_SECRET = "91611b7129e55d34898486cd34a6cb8afd4dbe3f645e94a9dc7d8b1ab0a5f1ca";
+
+            const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
+
+            try {
+                const response = await axios.post(url, formData, {
+                    maxContentLength: "Infinity",
+                    headers: {
+                        "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
+                        'pinata_api_key': API_KEY,
+                        'pinata_secret_api_key': API_SECRET
+                    }
+                });
+
+                console.log(response);
+                ipfsHash = response.data.IpfsHash;
+                statusEl.innerText = 'Arquivo enviado! IPFS Hash: ' + ipfsHash;
+                document.getElementById('registerBtn').disabled = false;
+            } catch (error) {
+                console.error('Erro no upload para IPFS', error);
+                statusEl.innerText = 'Erro no upload. Tente novamente.';
+            }
+        }
+
+        async function createProduct() {
+            const price = document.getElementById('price').value;
+            const accounts = await web3.eth.getAccounts();
+            try {
+                await contract.methods.createProduct(price, ipfsHash).send({ from: accounts[0] });
+                alert('Produto registrado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao registrar o produto', error);
+                alert('Erro ao registrar o produto. Verifique o console para mais detalhes.');
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
+

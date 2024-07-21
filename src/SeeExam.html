@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f0f0f0;
+            }
+            h2 {
+                background-color: #333;
+                color: #fff;
+                padding: 10px 0;
+                text-align: center;
+            }
+            #products {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 10px;
+            }
+            .product {
+                background-color: #fff;
+                box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+                margin: 10px;
+                padding: 10px;
+                width: calc(33% - 20px);
+                box-sizing: border-box;
+            }
+            .product button {
+                background-color: #4CAF50; /* Green */
+                border: none;
+                color: white;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 10px 2px;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+<body>
+    <h2>Resultados de Exames</h2>
+    <div id="products"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
+    <script>
+        // Substitua isso pelo endereço do contrato na sua blockchain
+        const contractAddress = "0x69a1464025d4a15B9880C3c4F22076A8334a95df";
+        // ABI do contrato (Interface de Aplicativo Binário)
+        const contractAbi = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_price",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_ipfsHash",
+				"type": "string"
+			}
+		],
+		"name": "createProduct",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address payable",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "purchased",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "ipfsHash",
+				"type": "string"
+			}
+		],
+		"name": "ProductCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address payable",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address payable",
+				"name": "buyer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "purchased",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "ipfsHash",
+				"type": "string"
+			}
+		],
+		"name": "ProductPurchased",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "purchaseProduct",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "productCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "products",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address payable",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "purchased",
+				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "ipfsHash",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]; // Coloque aqui a ABI do contrato
+        let web3;
+        let contract;
+        
+        async function init() {
+            if (window.ethereum) {
+                try {
+                    web3 = new Web3(window.ethereum);
+                    await window.ethereum.enable();
+                    contract = new web3.eth.Contract(contractAbi, contractAddress);
+                    displayProducts();
+                } catch (error) {
+                    console.error("Usuário recusou o acesso ao Ethereum wallet");
+                }
+            } else {
+                alert('Instale MetaMask!');
+            }
+        }
+
+        async function buyProduct(id, price) {
+            const accounts = await web3.eth.getAccounts();
+            await contract.methods.purchaseProduct(id).send({ from: accounts[0], value: price });
+            alert('Produto comprado com sucesso!');
+            location.reload(); // Recarrega a página para atualizar o estado do produto
+        }
+
+        async function displayProducts() {
+            const productCount = await contract.methods.productCount().call();
+            const productsDiv = document.getElementById('products');
+            const accounts = await web3.eth.getAccounts();
+
+            for (let i = 1; i <= productCount; i++) {
+                const product = await contract.methods.products(i).call();
+                const productDiv = document.createElement('div');
+
+                let ipfsHashInfo = '';
+                if (product.purchased && product.owner === accounts[0]) {
+                    ipfsHashInfo = `<p>IPFS Hash: <a href="https://ipfs.io/ipfs/${product.ipfsHash}" target="_blank">${product.ipfsHash}</a></p>`;
+                }
+
+                productDiv.innerHTML = `
+                    <h3>Produto ${i}</h3>
+                    <p>Preco: ${web3.utils.fromWei(product.price, 'ether')} ETH</p>
+                    <p>Dono: ${product.owner}</p>
+                    <p>Vendido: ${product.purchased ? 'Sim' : 'Nao'}</p>
+                    ${ipfsHashInfo}
+                    <button onclick="buyProduct(${i}, ${product.price})" ${product.purchased ? 'disabled' : ''}>Comprar</button>
+                `;
+
+                productsDiv.appendChild(productDiv);
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
