@@ -56,7 +56,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
   <script>
     // Substitua isso pelo endereço do contrato na sua blockchain
-    const contractAddress = "0xef97Bb5b2A71E84a1b23154fDa07Ce65Db83ce48";
+    const contractAddress = "0xC99c3561c5c6F8a52A8802ac1a241f2F38CF4d3f";
     // ABI do contrato (Interface de Aplicativo Binário)
     const contractAbi = [
       {
@@ -76,6 +76,25 @@
           }
         ],
         "name": "AccessGranted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "revokedFrom",
+            "type": "address"
+          }
+        ],
+        "name": "AccessRevoked",
         "type": "event"
       },
       {
@@ -114,8 +133,7 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
+        "type": "function"
       },
       {
         "inputs": [
@@ -144,8 +162,7 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
+        "type": "function"
       },
       {
         "inputs": [
@@ -184,6 +201,24 @@
             "internalType": "uint256",
             "name": "_id",
             "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_revokedFrom",
+            "type": "address"
+          }
+        ],
+        "name": "revokeAccess",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_id",
+            "type": "uint256"
           }
         ],
         "name": "getSharedWith",
@@ -195,8 +230,7 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
+        "type": "function"
       }
     ]; // Coloque aqui a ABI do contrato
     let web3;

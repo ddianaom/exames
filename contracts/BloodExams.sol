@@ -23,6 +23,11 @@ contract BloodExams {
         address grantedTo
     );
 
+    event AccessRevoked(
+        uint id,
+        address revokedFrom
+    );
+
     function createBloodTest(string memory _ipfsHash) public {
         bloodTestCount ++;
         bloodTests[bloodTestCount] = BloodTest(bloodTestCount, payable(msg.sender), _ipfsHash, new address[](0));
@@ -37,6 +42,22 @@ contract BloodExams {
 
         _bloodTest.sharedWith.push(_grantedTo);
         emit AccessGranted(_id, _grantedTo);
+    }
+
+    function revokeAccess(uint _id, address _revokedFrom) public {
+        BloodTest storage _bloodTest = bloodTests[_id];
+        require(_bloodTest.id > 0 && _bloodTest.id <= bloodTestCount, "Blood test does not exist");
+        require(_bloodTest.owner == msg.sender, "Only the owner can revoke access");
+        require(_revokedFrom != address(0), "Invalid address");
+
+        for (uint i = 0; i < _bloodTest.sharedWith.length; i++) {
+            if (_bloodTest.sharedWith[i] == _revokedFrom) {
+                _bloodTest.sharedWith[i] = _bloodTest.sharedWith[_bloodTest.sharedWith.length - 1];
+                _bloodTest.sharedWith.pop();
+                emit AccessRevoked(_id, _revokedFrom);
+                break;
+            }
+        }
     }
 
     function getSharedWith(uint _id) public view returns (address[] memory) {

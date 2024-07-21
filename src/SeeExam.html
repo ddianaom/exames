@@ -1,245 +1,326 @@
 <!DOCTYPE html>
 <html>
-    <head>
+
+<head>
 	<link rel="stylesheet" href="exams.css">
-    </head>
+</head>
+
 <body>
-    <h2>Meus Exames</h2>
-    <div id="products"></div>
+	<h2>Meus Exames</h2>
+	<div id="products"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
-    <script>
-        // Substitua isso pelo endereço do contrato na sua blockchain
-        const contractAddress = "0xef97Bb5b2A71E84a1b23154fDa07Ce65Db83ce48";
-        // ABI do contrato (Interface de Aplicativo Binário)
-        const contractAbi = [
-		{
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "grantedTo",
-          "type": "address"
-        }
-      ],
-      "name": "AccessGranted",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address payable",
-          "name": "owner",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "ipfsHash",
-          "type": "string"
-        }
-      ],
-      "name": "BloodTestCreated",
-      "type": "event"
-    },
-    {
-      "inputs": [],
-      "name": "bloodTestCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "bloodTests",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address payable",
-          "name": "owner",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "ipfsHash",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_ipfsHash",
-          "type": "string"
-        }
-      ],
-      "name": "createBloodTest",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_id",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "_grantedTo",
-          "type": "address"
-        }
-      ],
-      "name": "grantAccess",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_id",
-          "type": "uint256"
-        }
-      ],
-      "name": "getSharedWith",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    }
-]; // Coloque aqui a ABI do contrato
-        let web3;
-        let contract;
-        
-        async function init() {
-            if (window.ethereum) {
-                try {
-                    web3 = new Web3(window.ethereum);
-                    await window.ethereum.enable();
-                    contract = new web3.eth.Contract(contractAbi, contractAddress);
-                    displayProducts();
-                } catch (error) {
-                    console.error("Usuário recusou o acesso ao Ethereum wallet");
-                }
-            } else {
-                alert('Instale MetaMask!');
-            }
-        }
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
+	<script>
+		// Substitua isso pelo endereço do contrato na sua blockchain
+		const contractAddress = "0xC99c3561c5c6F8a52A8802ac1a241f2F38CF4d3f";
+		// ABI do contrato (Interface de Aplicativo Binário)
+		const contractAbi = [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "grantedTo",
+						"type": "address"
+					}
+				],
+				"name": "AccessGranted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "revokedFrom",
+						"type": "address"
+					}
+				],
+				"name": "AccessRevoked",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address payable",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "ipfsHash",
+						"type": "string"
+					}
+				],
+				"name": "BloodTestCreated",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "bloodTestCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "bloodTests",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "ipfsHash",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_ipfsHash",
+						"type": "string"
+					}
+				],
+				"name": "createBloodTest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_grantedTo",
+						"type": "address"
+					}
+				],
+				"name": "grantAccess",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_revokedFrom",
+						"type": "address"
+					}
+				],
+				"name": "revokeAccess",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					}
+				],
+				"name": "getSharedWith",
+				"outputs": [
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		]; // Coloque aqui a ABI do contrato
+		let web3;
+		let contract;
 
-        async function buyProduct(id, price) {
-            const accounts = await web3.eth.getAccounts();
-            await contract.methods.purchaseProduct(id).send({ from: accounts[0], value: price });
-            alert('Produto comprado com sucesso!');
-            location.reload(); // Recarrega a página para atualizar o estado do produto
-        }
-
-        async function displayProducts() {
-            const bloodTestCount = await contract.methods.bloodTestCount().call();
-            const productsDiv = document.getElementById('products');
-            const accounts = await web3.eth.getAccounts();
-
-            for (let i = 1; i <= bloodTestCount; i++) {
-                const product = await contract.methods.bloodTests(i).call();
-                const productDiv = document.createElement('div');
-
-                let ipfsHashInfo = '';
-                if (product.owner === accounts[0]) {
-                    ipfsHashInfo = `<p>IPFS Hash: <a href="https://ipfs.io/ipfs/${product.ipfsHash}" target="_blank">${product.ipfsHash}</a></p>`;
-                } else {
-					continue;
+		async function init() {
+			if (window.ethereum) {
+				try {
+					web3 = new Web3(window.ethereum);
+					await window.ethereum.enable();
+					contract = new web3.eth.Contract(contractAbi, contractAddress);
+					displayProducts();
+				} catch (error) {
+					console.error("Usuário recusou o acesso ao Ethereum wallet");
 				}
+			} else {
+				alert('Instale MetaMask!');
+			}
+		}
 
-                productDiv.innerHTML = `
-                    <h3>Exame ${i}</h3>
-                    <p>Dono: ${product.owner}</p>
-                    ${ipfsHashInfo}
-                    <button id="share-button-${i}" onclick="shareExam(${i})">Compartilhar exame</button>
-                    <div id="share-div-${i}" class="hidden">
-                        <label for="address-input-${i}">Endereço a ser compartilhado:</label>
-                        <input type="text" id="address-input-${i}">
-                        <button id="share-confirm-button-${i}">Compartilhar</button>
-                        <button id="share-cancel-button-${i}">Cancelar</button>
-                    </div>
-                `;
+		async function buyProduct(id, price) {
+			const accounts = await web3.eth.getAccounts();
+			await contract.methods.purchaseProduct(id).send({ from: accounts[0], value: price });
+			alert('Produto comprado com sucesso!');
+			location.reload(); // Recarrega a página para atualizar o estado do produto
+		}
 
-                productsDiv.appendChild(productDiv);
-            }
-        }
+		async function displayProducts() {
+			const bloodTestCount = await contract.methods.bloodTestCount().call();
+			const productsDiv = document.getElementById('products');
+			const accounts = await web3.eth.getAccounts();
+			const userAddress = accounts[0];
+
+			for (let i = 1; i <= bloodTestCount; i++) {
+				const product = await contract.methods.bloodTests(i).call();
+				const sharedWith = await contract.methods.getSharedWith(i).call();
+
+				if (product.owner === userAddress) {
+					const productDiv = document.createElement('div');
+					productDiv.className = 'product';
+					let ipfsHashInfo = `<p>IPFS Hash: <a href="https://ipfs.io/ipfs/${product.ipfsHash}" target="_blank">${product.ipfsHash}</a></p>`;
+
+					productDiv.innerHTML = `
+                        <h3>Exame ${i}</h3>
+                        <p>Dono: ${product.owner}</p>
+                        ${ipfsHashInfo}
+                        <button id="share-button-${i}" onclick="shareExam(${i})">Compartilhar Exame</button>
+                        <button id="remove-button-${i}" onclick="removeAccess(${i})">Remover Acesso</button>
+                        <div id="share-div-${i}" class="hidden">
+                            <label for="address-${i}">Endereço a ser compartilhado</label>
+                            <input type="text" id="address-${i}">
+                            <button onclick="grantAccess(${i})">Compartilhar</button>
+                            <button onclick="cancelShare(${i})">Cancelar</button>
+                        </div>
+                        <div id="remove-div-${i}" class="hidden">
+                            <ul id="remove-list-${i}"></ul>
+                            <button onclick="completeRemove(${i})">Concluir</button>
+                        </div>
+                    `;
+
+					productsDiv.appendChild(productDiv);
+				}
+			}
+		}
 
 		async function shareExam(id) {
-            const shareDiv = document.getElementById(`share-div-${id}`);
-            const shareButton = document.getElementById(`share-button-${id}`);
-            const addressInput = document.getElementById(`address-input-${id}`);
-            const shareConfirmButton = document.getElementById(`share-confirm-button-${id}`);
-            const shareCancelButton = document.getElementById(`share-cancel-button-${id}`);
+			const shareButton = document.getElementById(`share-button-${id}`);
+			const removeButton = document.getElementById(`remove-button-${id}`);
+			const shareDiv = document.getElementById(`share-div-${id}`);
 
-            shareButton.disabled = true;
-            shareDiv.classList.remove('hidden');
+			shareButton.disabled = true;
+			removeButton.disabled = true;
+			shareDiv.classList.remove('hidden');
+		}
 
-            shareConfirmButton.onclick = async () => {
-                const address = addressInput.value;
-                if (web3.utils.isAddress(address)) {
-                    await contract.methods.grantAccess(id, address).send({ from: (await web3.eth.getAccounts())[0] });
-                    alert('Exame compartilhado com sucesso!');
-                    shareDiv.classList.add('hidden');
-                    shareButton.disabled = false;
-                } else {
-                    alert('Endereço inválido!');
-                }
-            };
+		async function removeAccess(id) {
+			const shareButton = document.getElementById(`share-button-${id}`);
+			const removeButton = document.getElementById(`remove-button-${id}`);
+			const removeDiv = document.getElementById(`remove-div-${id}`);
 
-            shareCancelButton.onclick = () => {
-                shareDiv.classList.add('hidden');
-                shareButton.disabled = false;
-            };
-        }
+			shareButton.disabled = true;
+			removeButton.disabled = true;
+			removeDiv.classList.remove('hidden');
 
-        window.onload = init;
-    </script>
+			const sharedWith = await contract.methods.getSharedWith(id).call();
+			const removeList = document.getElementById(`remove-list-${id}`);
+			removeList.innerHTML = '';
+
+			sharedWith.forEach(address => {
+				const listItem = document.createElement('li');
+				listItem.innerHTML = `
+                    ${address} <button onclick="removeAddress(${id}, '${address}')">Remover</button>
+                `;
+				removeList.appendChild(listItem);
+			});
+		}
+
+		async function removeAddress(id, address) {
+			const accounts = await web3.eth.getAccounts();
+			await contract.methods.revokeAccess(id, address).send({ from: accounts[0] });
+			alert('Acesso removido com sucesso!');
+			removeAccess(id); // Recarregar a lista de endereços compartilhados
+		}
+
+		async function completeRemove(id) {
+			const shareButton = document.getElementById(`share-button-${id}`);
+			const removeButton = document.getElementById(`remove-button-${id}`);
+			const removeDiv = document.getElementById(`remove-div-${id}`);
+
+			shareButton.disabled = false;
+			removeButton.disabled = false;
+			removeDiv.classList.add('hidden');
+		}
+
+		async function grantAccess(id) {
+			const addressInput = document.getElementById(`address-${id}`).value;
+			const accounts = await web3.eth.getAccounts();
+			await contract.methods.grantAccess(id, addressInput).send({ from: accounts[0] });
+			alert('Exame compartilhado com sucesso!');
+			cancelShare(id); // Ocultar a div de compartilhamento e reativar os botões
+		}
+
+		async function cancelShare(id) {
+			const shareButton = document.getElementById(`share-button-${id}`);
+			const removeButton = document.getElementById(`remove-button-${id}`);
+			const shareDiv = document.getElementById(`share-div-${id}`);
+
+			shareButton.disabled = false;
+			removeButton.disabled = false;
+			shareDiv.classList.add('hidden');
+		}
+
+		window.onload = init;
+	</script>
 </body>
+
 </html>
