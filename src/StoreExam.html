@@ -7,62 +7,19 @@
     <title>Upload do Exame</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="exams.css">
-    <style>
-        .container-custom {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .custom-button {
-            background-color: #921541;
-            color: white;
-            border: none;
-        }
-
-        .custom-button:hover {
-            background-color: #7a1d38;
-            color: white;
-        }
-
-        .file-upload-box {
-            border: 2px dashed #ddd;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .file-upload-box input[type="file"] {
-            display: none;
-        }
-
-        .file-upload-box label {
-            display: block;
-            cursor: pointer;
-            color: #921541;
-            font-weight: bold;
-        }
-    </style>
 </head>
 
 <body class="d-flex justify-content-center align-items-center vh-100">
     <div class="container text-center">
         <h2 class="mb-4">Upload do seu Exame</h2>
-        <div class="container-custom">
+        <div class="container-store">
             <div class="file-upload-box">
                 <label for="fileUpload">Clique aqui para enviar o exame</label>
                 <input type="file" id="fileUpload">
             </div>
             <div class="d-flex justify-content-center">
-                <button onclick="uploadFile()" class="btn custom-button mx-2">Upload para IPFS</button>
-                <button onclick="createProduct()" id="registerBtn" class="btn custom-button mx-2" disabled>Registrar Exame</button>
+                <button onclick="uploadFile()" class="btn store-button mx-2">Upload para IPFS</button>
+                <button onclick="createProduct()" id="registerBtn" class="btn store-button mx-2" disabled>Registrar Exame</button>
             </div>
             <p id="uploadStatus"></p>
         </div>

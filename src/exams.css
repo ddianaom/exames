@@ -107,3 +107,86 @@ input[type="text"] {
     box-sizing: border-box;
     font-size: 14px;
 }
+
+.container-custom {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.custom-button {
+    background-color: #921541;
+    color: white;
+    border: none;
+}
+
+.custom-button:hover {
+    background-color: #7a1d38;
+    color: white;
+}
+
+.product {
+    border-bottom: 1px solid #ddd;
+    padding: 15px 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.product h3 {
+    color: #921541;
+}
+
+.btn-link {
+    color: #921541;
+}
+
+.btn-link:hover {
+    color: #7a1d38;
+}
+
+
+.container-store {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.store-button {
+    background-color: #921541;
+    color: white;
+    border: none;
+}
+
+.custom-button:hover {
+    background-color: #7a1d38;
+    color: white;
+}
+
+.file-upload-box {
+    border: 2px dashed #ddd;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.file-upload-box input[type="file"] {
+    display: none;
+}
+
+.file-upload-box label {
+    display: block;
+    cursor: pointer;
+    color: #921541;
+    font-weight: bold;
+}
