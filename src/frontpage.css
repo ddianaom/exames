@@ -73,3 +73,14 @@ h2 {
     margin: 10px 2px;
     cursor: pointer;
 }
+
+.custom-button {
+    background-color: #921541;
+    color: white;
+    border: none;
+}
+
+.custom-button:hover {
+    background-color: #7a1d38; /* Cor para o hover */
+    color: white;
+}

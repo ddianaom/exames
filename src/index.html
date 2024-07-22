@@ -4,17 +4,19 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Hospital</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <link rel="stylesheet" href="frontpage.css">
     </head>
 <body>
-    <div class="container">
-    <img src="images/hospital.png" width="40%">
-    <h1>dApp de Armazenamento de Exames de Sangue</h1>
-    <h3 id="address">Endereço: </h3>
-    <div class="options">
-        <a href="StoreExam.html" class="option">Armazenar Exame</a>
-        <a href="SeeExam.html" class="option">Visualizar meus Exames</a>
-        <a href="SeeSharedExams.html" class="option">Visualizar Exames Compartilhados</a>
+    <div class="container text-center mt-5">
+        <img src="images/hospital.png" class="img-fluid w-50 mb-4" alt="Hospital">
+        <h1 class="mb-4">Armazenamento de Exames de Sangue</h1>
+        <h3 id="address" class="mb-4">Endereço: </h3>
+        <div class="options">
+            <a href="StoreExam.html" class="btn custom-button m-2">Armazenar Exame</a>
+            <a href="SeeExam.html" class="btn custom-button m-2">Visualizar meus Exames</a>
+            <a href="SeeSharedExams.html" class="btn custom-button m-2">Visualizar Exames Compartilhados</a>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
@@ -43,6 +45,5 @@
         }
         window.onload = init;
     </script>
-    </div>
 </body>
 </html>

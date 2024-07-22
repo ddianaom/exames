@@ -1,240 +1,286 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
-  <link rel="stylesheet" href="exams.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exames Compartilhados</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="exams.css">
+    <style>
+        .container-custom {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .custom-button {
+            background-color: #921541;
+            color: white;
+            border: none;
+        }
+
+        .custom-button:hover {
+            background-color: #7a1d38;
+            color: white;
+        }
+
+        .product {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .product h3 {
+            color: #921541;
+        }
+
+        .btn-link {
+            color: #921541;
+        }
+
+        .btn-link:hover {
+            color: #7a1d38;
+        }
+    </style>
 </head>
 
-<body>
-  <h2>Exames Compartilhados</h2>
-  <div id="products"></div>
+<body class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h2 class="text-center mb-4">Exames Compartilhados</h2>
+        <div id="products" class="container-custom"></div>
+    </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
-  <script>
-    // Substitua isso pelo endereço do contrato na sua blockchain
-    const contractAddress = "0xC99c3561c5c6F8a52A8802ac1a241f2F38CF4d3f";
-    // ABI do contrato (Interface de Aplicativo Binário)
-    const contractAbi = [
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "grantedTo",
-            "type": "address"
-          }
-        ],
-        "name": "AccessGranted",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "revokedFrom",
-            "type": "address"
-          }
-        ],
-        "name": "AccessRevoked",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "address payable",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "ipfsHash",
-            "type": "string"
-          }
-        ],
-        "name": "BloodTestCreated",
-        "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "bloodTestCount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "bloodTests",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address payable",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "ipfsHash",
-            "type": "string"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_ipfsHash",
-            "type": "string"
-          }
-        ],
-        "name": "createBloodTest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "_grantedTo",
-            "type": "address"
-          }
-        ],
-        "name": "grantAccess",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "_revokedFrom",
-            "type": "address"
-          }
-        ],
-        "name": "revokeAccess",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_id",
-            "type": "uint256"
-          }
-        ],
-        "name": "getSharedWith",
-        "outputs": [
-          {
-            "internalType": "address[]",
-            "name": "",
-            "type": "address[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }
-    ]; // Coloque aqui a ABI do contrato
-    let web3;
-    let contract;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
+    <script>
+        const contractAddress = "0xC99c3561c5c6F8a52A8802ac1a241f2F38CF4d3f";
+        const contractAbi = [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "grantedTo",
+                        "type": "address"
+                    }
+                ],
+                "name": "AccessGranted",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "revokedFrom",
+                        "type": "address"
+                    }
+                ],
+                "name": "AccessRevoked",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address payable",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "string",
+                        "name": "ipfsHash",
+                        "type": "string"
+                    }
+                ],
+                "name": "BloodTestCreated",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "bloodTestCount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "bloodTests",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address payable",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "ipfsHash",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "_ipfsHash",
+                        "type": "string"
+                    }
+                ],
+                "name": "createBloodTest",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "_grantedTo",
+                        "type": "address"
+                    }
+                ],
+                "name": "grantAccess",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "_revokedFrom",
+                        "type": "address"
+                    }
+                ],
+                "name": "revokeAccess",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getSharedWith",
+                "outputs": [
+                    {
+                        "internalType": "address[]",
+                        "name": "",
+                        "type": "address[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
 
-    async function init() {
-      if (window.ethereum) {
-        try {
-          web3 = new Web3(window.ethereum);
-          await window.ethereum.enable();
-          contract = new web3.eth.Contract(contractAbi, contractAddress);
-          displayProducts();
-        } catch (error) {
-          console.error("Usuário recusou o acesso ao Ethereum wallet");
+        let web3;
+        let contract;
+
+        async function init() {
+            if (window.ethereum) {
+                try {
+                    web3 = new Web3(window.ethereum);
+                    await window.ethereum.enable();
+                    contract = new web3.eth.Contract(contractAbi, contractAddress);
+                    displayProducts();
+                } catch (error) {
+                    console.error("Usuário recusou o acesso ao Ethereum wallet");
+                }
+            } else {
+                alert('Instale MetaMask!');
+            }
         }
-      } else {
-        alert('Instale MetaMask!');
-      }
-    }
 
-    async function displayProducts() {
-      const bloodTestCount = await contract.methods.bloodTestCount().call();
-      const productsDiv = document.getElementById('products');
-      const accounts = await web3.eth.getAccounts();
-      const userAddress = accounts[0];
+        async function displayProducts() {
+            const bloodTestCount = await contract.methods.bloodTestCount().call();
+            const productsDiv = document.getElementById('products');
+            const accounts = await web3.eth.getAccounts();
+            const userAddress = accounts[0];
 
-      for (let i = 1; i <= bloodTestCount; i++) {
-        const product = await contract.methods.bloodTests(i).call();
-        const sharedWith = await contract.methods.getSharedWith(i).call();
+            for (let i = 1; i <= bloodTestCount; i++) {
+                const product = await contract.methods.bloodTests(i).call();
+                const sharedWith = await contract.methods.getSharedWith(i).call();
 
-        if (sharedWith.includes(userAddress)) {
-          const productDiv = document.createElement('div');
-          productDiv.className = 'product';
-          let ipfsHashInfo = `<p>IPFS Hash: <a href="https://ipfs.io/ipfs/${product.ipfsHash}" target="_blank">${product.ipfsHash}</a></p>`;
+                if (sharedWith.includes(userAddress)) {
+                    const productDiv = document.createElement('div');
+                    productDiv.className = 'product';
+                    let ipfsHashInfo = `<p>IPFS Hash: <a href="https://ipfs.io/ipfs/${product.ipfsHash}" target="_blank">${product.ipfsHash}</a></p>`;
 
-          productDiv.innerHTML = `
+                    productDiv.innerHTML = `
                         <h3>Exame ${i}</h3>
                         <p>Dono: ${product.owner}</p>
                         ${ipfsHashInfo}
                     `;
 
-          productsDiv.appendChild(productDiv);
+                    productsDiv.appendChild(productDiv);
+                }
+            }
         }
-      }
-    }
 
-    window.onload = init;
-  </script>
+        window.onload = init;
+    </script>
 </body>
 
 </html>
