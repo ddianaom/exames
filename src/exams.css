@@ -1,50 +1,109 @@
+/* Fonte do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 body {
-    font-family: system-ui;
-    margin: 0;
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
     padding: 0;
-    
+    background: rgba(255,215,221,1);
+    color: #333;
+    align-items: center;
+    flex-direction: column; 
 }
 
 .container {
     text-align: center;
     background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    min-height: 400px;
 }
 
 h2 {
-    background-color: #333;
+    background-color: #921541;
+    width: 50%;
     color: #fff;
-    padding: 10px 0;
+    padding: 20px 0;
+    font-size: 28px;
+    border-radius: 12px 12px 12px 12px;
     text-align: center;
+    margin: 0 auto;
 }
+
 #products {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 10px;
+    padding: 20px;
 }
+
 .product {
-    background-color: #fff;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-    margin: 10px;
-    padding: 10px;
-    width: calc(33% - 20px);
+    background-color: #ffffff;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+    padding: 20px;
+    width: calc(33% - 30px);
     box-sizing: border-box;
+    border-radius: 12px;
+    transition: transform 0.2s ease-in-out;
 }
+
+.product:hover {
+    transform: translateY(-5px);
+}
+
 .product button {
-    background-color: #4CAF50; /* Green */
+    background-color: #00796b;
     border: none;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 24px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 10px 2px;
+    margin: 10px 5px;
     cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
 }
+
+.product button:hover {
+    background-color: #004d40;
+}
+
 .hidden {
     display: none;
+}
+
+.product p {
+    font-size: 14px;
+    color: #555;
+    margin: 10px 0;
+}
+
+.product h3 {
+    font-size: 20px;
+    margin: 0 0 10px;
+    color: #00796b;
+}
+
+a {
+    color: #00796b;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin: 10px 0;
+    width: calc(100% - 22px);
+    box-sizing: border-box;
+    font-size: 14px;
 }
